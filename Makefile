@@ -14,6 +14,7 @@ HOST_CC  ?= cc
 all: $(TARGET)
 
 $(TARGET): $(SRCS) $(wildcard src/*.h)
+	@mkdir -p $(dir $(TARGET))
 	$(CC) $(CFLAGS) $(SRCS) -o $@ $(LDFLAGS)
 	$(CROSS_COMPILE)strip $@
 
