@@ -7,7 +7,7 @@ CFLAGS   = -O2 -Wall -std=gnu18 -marm -mtune=cortex-a7 -mfpu=neon-vfpv4 \
 LDFLAGS  = -L$(PREFIX)/lib -lSDL -lSDL_ttf -lSDL_image -lm -lpthread
 
 # Host unit tests: pure (non-SDL) modules only. Add sources here.
-TEST_SRCS =
+TEST_SRCS = src/paths.c src/games.c src/launch.c
 TEST_BIN  = build/tests
 HOST_CC  ?= cc
 
