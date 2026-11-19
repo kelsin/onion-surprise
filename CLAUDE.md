@@ -8,6 +8,7 @@ C + SDL 1.2 app for Onion OS on the Miyoo Mini: Apps → Surprise lists the game
 - `make test` runs the host unit tests (no SDL) and the generator test. Run it before every commit.
 - `scripts/preview.sh` renders headless screenshots to `build/preview/`. It uses the SDL dummy driver, so it can't show device-only rendering bugs.
 - `scripts/package.sh` writes `dist/Surprise-<git describe>.zip`, which holds `App/Surprise/` and `Icons/Default/app/surprise.png`.
+- Releases: release-please tags `vX.Y.Z` from conventional commits and CI attaches `Surprise-vX.Y.Z.zip`; `scripts/publish.sh` copies it to `/Volumes/roms/os/onion/`. Never put anything else there. See README "Releases".
 
 ## Device rules (verified on hardware)
 

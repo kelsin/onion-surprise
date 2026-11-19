@@ -1,0 +1,58 @@
+{
+  "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json",
+  "packages": {
+    ".": {
+      "release-type": "simple",
+      "package-name": "onion-surprise",
+      "include-v-in-tag": true,
+      "include-component-in-tag": false,
+      "initial-version": "0.1.0",
+      "changelog-sections": [
+        {
+          "type": "feat",
+          "section": ":video_game: Features"
+        },
+        {
+          "type": "fix",
+          "section": ":bug: Bug Fixes"
+        },
+        {
+          "type": "perf",
+          "section": ":zap: Performance Improvements"
+        },
+        {
+          "type": "revert",
+          "section": ":rewind: Reverts"
+        },
+        {
+          "type": "chore",
+          "section": ":broom: Chores"
+        },
+        {
+          "type": "docs",
+          "section": ":book: Documentation"
+        },
+        {
+          "type": "style",
+          "section": ":art: Styles"
+        },
+        {
+          "type": "refactor",
+          "section": ":hammer_and_wrench: Code Refactoring"
+        },
+        {
+          "type": "test",
+          "section": ":traffic_light: Tests"
+        },
+        {
+          "type": "build",
+          "section": ":package: Build System"
+        },
+        {
+          "type": "ci",
+          "section": ":gear: Continuous Integration"
+        }
+      ]
+    }
+  }
+}
