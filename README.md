@@ -25,7 +25,7 @@ scripts/build.sh          # cross-build in Docker (Colima) -> App/Surprise/surpr
 make test                 # host unit tests + make-surprise-json test
 scripts/preview.sh        # headless screenshots -> build/preview/*.png
 scripts/package.sh        # build + dist/Surprise-<version>.zip (--no-build to skip the build)
-scripts/deploy.sh <host> [--run]   # copy to a device over SSH; --run launches it and prints log.txt
+scripts/deploy.sh <host> [--run]   # copy to a device over SSH (tar over one connection); --run launches it and prints log.txt (press B only, MainUI is still running)
 scripts/make-icon.py      # regenerate surprise.png (uv run --with pillow)
 ```
 
