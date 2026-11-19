@@ -14,7 +14,16 @@ Tick each; note failures with `log.txt` attached.
 10. UNVERIFIED: background orientation (`bg-list-s`, `preview-bg`, theme `background.png`) renders upright, not rotated.
 11. Mini Plus and Mini Flip: UNVERIFIED on Flip (screen, input, no `full_resolution`).
 12. Empty/missing `surprise.json` shows the message; B exits.
-13. Logs: `App/Surprise/log.txt` (stdout+stderr of the last run, truncated each run). Over SSH (Tweaks → Network; root, blank password):
+13. Launch via Surprise 3 times in a row: no error flash or fatal panel.
+14. MENU inside the app exits it (keymon does not intercept).
+15. Power-button suspend/resume inside the app, then A still launches.
+16. After a game exits, note which MainUI tab you land on. Reopen Surprise, launch a different game, and confirm recents has both, newest first, without duplicates. After several launches, `wc -l` the recents file to check it does not grow unexpectedly.
+17. CJK/accented labels render with only the bundled font.
+18. Footer hint size on a theme without a `hint` section (should follow `title`).
+19. Scrolling lag with large (e.g. 500x700) box art.
+20. `scripts/deploy.sh <host>` works against dropbear (single ssh connection, tar over stdin).
+21. `log.txt` is empty after a normal run; any `SDL_Init`, `video:` or `launch failed:` line points at the failure.
+22. Logs: `App/Surprise/log.txt` (stdout+stderr of the last run, truncated each run). Over SSH (Tweaks → Network; root, blank password):
 
 ```sh
 ssh root@<host> 'cat /mnt/SDCARD/App/Surprise/log.txt'
