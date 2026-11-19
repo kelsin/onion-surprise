@@ -8,14 +8,14 @@ Tick each; note failures with `log.txt` attached.
 4. Open it: list shows 10 titles, box art on the right, footer hints and n/total.
 5. Navigate: Up/Down, L1/R1 page, wraps/clamps sensibly. Theme matches the active theme; switch theme in Tweaks and reopen.
 6. Launch a game with A (and with Start). The game starts. Exit the game: where do you land? Expected: MainUI.
-7. Recents and GameSwitcher show the game once. UNVERIFIED: compare the `rompath` form MainUI writes. Launch some other game normally from the game list, then read `/mnt/SDCARD/Roms/recentlist*.json` and compare its `rompath` to our line. If forms differ, GameSwitcher may show duplicates.
+7. Recents and GameSwitcher show the game once (verified 2026-11-19 on Mini). To re-check, compare the `rompath` form MainUI writes. Launch some other game normally from the game list, then read `/mnt/SDCARD/Roms/recentlist*.json` and compare its `rompath` to our line. If forms differ, GameSwitcher may show duplicates.
 8. Play activity: the launched game's play time is counted (Onion's playActivity).
 9. B and Menu exit cleanly back to Apps, with nothing launched and recents unchanged.
-10. UNVERIFIED: background orientation (`bg-list-s`, `preview-bg`, theme `background.png`) renders upright, not rotated.
+10. Theme background, A/B icons and box art render upright (verified 2026-11-19 on Mini; see research §6 for why).
 11. Mini Plus and Mini Flip: UNVERIFIED on Flip (screen, input, no `full_resolution`).
 12. Empty/missing `surprise.json` shows the message; B exits.
 13. Launch via Surprise 3 times in a row: no error flash or fatal panel.
-14. MENU inside the app exits it (keymon does not intercept).
+14. MENU inside the app exits it (keymon does not intercept). Verified 2026-11-19 on Mini.
 15. Power-button suspend/resume inside the app, then A still launches.
 16. After a game exits, note which MainUI tab you land on. Reopen Surprise, launch a different game, and confirm recents has both, newest first, without duplicates. After several launches, `wc -l` the recents file to check it does not grow unexpectedly.
 17. CJK/accented labels render with only the bundled font.

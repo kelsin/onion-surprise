@@ -37,7 +37,11 @@ Location: `/mnt/SDCARD/App/<DirName>/`. Onion lists an app if `/mnt/SDCARD/App/<
 - Keys used: `label`, `icon`, `launch`, `description`. `iconsel` (the selected-state icon) is optional; RomM sets `"iconsel": ""` (`miyoo-mini-app/App/RomM/config.json:4`).
 - `icon` is resolved relative to the app dir. Onion uses `"../../Icons/Default/app/<name>.png"`, RomM uses `"romm.png"`.
 - Icon format: PNG RGBA **74×74** (all of `static/build/Icons/Default/app/*.png`, checked with `file`). RomM ships 64×64, which also works.
-- Icon-pack caveat: `themeSwitcher` / `apply_singleIcon` rewrites `icon`/`iconsel` in App config.json files when the icon pack changes. It does this only if the pack holds a file named `<icon basename before the first '-'>.png` (`src/common/utils/apply_icons.h:131-183`). Use a unique basename (e.g. `surprise.png`) so the icon is never replaced.
+- Icon packs (`src/common/utils/apply_icons.h:132-185`): applying a pack rewrites `icon` (and sets or deletes `iconsel`) in each App config.json to `<pack>/app/<name>.png`, where `<name>` is the current icon's basename before the first `-`. If the pack lacks that file, Onion falls back to `/mnt/SDCARD/Icons/Default/app/<name>.png` only when `reset_default` is true; otherwise it leaves the config unchanged.
+  - Applying a theme with icons uses pack `<theme>/icons` (or `Icons/Default` if the theme has none) with `reset_default=true` (`src/themeSwitcher/installTheme.h:205-210`).
+  - Tweaks → Icons → icon packs uses `reset_default=false` (`src/tweaks/icons.h:177`), so a pack without our icon leaves the previous one.
+  - So Surprise ships `Icons/Default/app/surprise.png`, and `scripts/make-theme-icons.py` drops `icons/app/surprise.png` into one-colour themes. Verified on device 2026-11-19 with the TechDweeb themes.
+- Apps menu order: MainUI lists `App/*` in directory order, not by label. Tweaks → Tools → Sort apps A–Z / Z–A runs `.tmp_update/script/app_sorter.sh`, which moves the app folders out and back in label order, then restarts MainUI (`src/tweaks/tools.h:151-159`).
 - Onion's `config.json` parser for `label`/`launch` is `file_parseKeyValue(config_path, "label", …, ':', 0)` (`apps.h:67,127`), a simple key:value scan. Keep one key per line, no nesting.
 
 ### How an app is launched (cwd/env)
@@ -174,7 +178,7 @@ Canonical path form (Onion's own comment, `src/common/utils/file.h:132`): `"/mnt
 {"label":"Metroid Fusion","rompath":"/mnt/SDCARD/Emu/GBA/../../Roms/GBA/Metroid Fusion.gba","imgpath":"/mnt/SDCARD/Emu/GBA/../../Roms/GBA/Imgs/Metroid Fusion.png","launch":"/mnt/SDCARD/Emu/GBA/launch.sh","type":5}
 ```
 
-(That MainUI itself writes exactly this form is **UNVERIFIED**, since MainUI is closed source. Test on device by launching one game from MainUI and reading `recentlist.json`. The `/../../Roms/` form is what `JsonGameEntry`, `playActivityDB.h:237-238` and `cacheDB.h:110-111` all expect.)
+(**Verified on device 2026-11-19** (Miyoo Mini, Onion 4.4 beta): MainUI writes this same form, and GameSwitcher shows no duplicates after launching from Surprise. The `/../../Roms/` form is what `JsonGameEntry`, `playActivityDB.h:237-238` and `cacheDB.h:110-111` all expect.)
 
 ### Parser constraints (hard requirements)
 
@@ -262,7 +266,12 @@ screen = SDL_CreateRGBSurface(SDL_HWSURFACE, w, h, 32, 0, 0, 0, 0);
 - Image lookup (`load.h:41-71`): `Saves/CurrentProfile/theme/skin/<name>.png`, then `<theme>/skin/<name>.png`, then `/mnt/SDCARD/miyoo/app/skin/<name>.png` (the `extra/<x>` names fall back to `/mnt/SDCARD/.tmp_update/res/<x>.png`).
 - Skin names a game list needs (`resources.h:139-191`): `background` (640×480), `bg-title` (header 640×60), `bg-list-s` (row highlight 640×60), `div-line-h` (640×4), `tips-bar-bg` (footer 640×60), `preview-bg` (box-art panel 256×364), `icon-A-54`, `icon-B-54`, and `power-*-icon` (battery). Sizes are from the default skin `static/build/miyoo/app/skin/*.png`.
 - Onion's MainUI-style list layout (`src/common/theme/render/list.h:52-235`, header `render/header.h:9-55`, footer `render/footer.h:63-125`): header y 0–60 with a centered title (TITLE font). Rows start at y=60: **6 small rows × 60 px** (`components/list.h:117`), with `div-line-h` dividers and a `bg-list-s` highlight on the active row. The label is drawn at x=20 with the LIST font and vertically centered. Box art: `preview-bg` is blitted at (640−w, 60), and the image is downscaled to ≤250 px wide and centered at x within the panel, y=240 (`list.h:186-217`, `preview_width = 250`). Footer y 420–480 shows `tips-bar-bg`, A/B hints and "n/total" in the HINT font at right x=620, y=449 (`footer.h:73-110`). How closely this matches MainUI's own *game* list is **UNVERIFIED**, since MainUI is closed source.
-- **Rotation quirk (UNVERIFIED reason):** `theme/background.h:12-18` loads `skin/background.png` and **rotates it 180°** (`utils/rotate180.h`) before use, in both main and v4.3.1-1. Yet a real theme's `background.png` is stored upright (checked "System 9": title bar at the top). Don't reuse `background.h`. Blit `background.png` as-is with the classic SDL path, and check orientation on device in the first smoke test.
+- **Rotation (verified on device 2026-11-19):** `theme/background.h:12-18` loads `skin/background.png` and rotates it 180° (`utils/rotate180.h`) before use, and that is required. Results on a Miyoo Mini:
+  - Surfaces from `SDL_DisplayFormatAlpha` (hardware surfaces on Miyoo's libSDL) draw rotated 180°.
+  - Software surfaces as returned by `IMG_Load` / `TTF_Render*` draw as stored.
+  - Unrotated, `background.png` shows upside down.
+  - Converting skins with `SDL_ConvertSurface` to software ARGB made `icon-A-54`/`icon-B-54` vanish (cause unknown).
+  - Rule the app follows: blit skins exactly as `IMG_Load` returns them, rotate only `background.png` 180°, keep box art as software ARGB, and never use `SDL_DisplayFormat*`.
 - Reuse and licensing: Onion is **GPL-3.0** (`LICENSE`), and so is RomM's app. Vendoring `theme/*.h`, `components/list.h` or `utils/*` makes the app a GPL-3.0 derivative. Those headers also drag in many dependencies (`system/lang.h`, `utils/flags.h` temp flags, keymon shm, `SDL_rotozoom`) and keep all state in header-defined statics. Recommendation: reimplement a small theme loader (~150 LOC) on cJSON (MIT) and the SDL_gfx rotozoom code (zlib), following the paths and keys above. Or license the app GPL-3.0 and vendor `load.h` + `config.h` + `render/list.h` with edits.
 
 ---
@@ -289,7 +298,7 @@ Use A = launch, B = exit (Onion hint convention `LANG_SELECT`/`LANG_BACK`, `twea
 - The **framebuffer stays 640×480** for MainUI and for apps. It switches to 752×560 (`fbset -g 752 560 752 1120 32`) only for programs with a `full_resolution` marker, and switches back afterwards (`runtime.sh:282-301,400-423`).
 - Onion C code always takes its render size from the fb (`display_getRenderResolution()` → `FBIOGET_VSCREENINFO`, `display.h:83-92`). When the fb isn't 640×480 it scales theme assets by `width/640` (`sdl_direct_fb.h:37-39`, `load.h:24-39`).
 - **Recommendation:** ship without `full_resolution`. Then the app always runs at 640×480, theme assets match 1:1, and there is nothing to handle for 560p. Still size the surface from `SDL_SetVideoMode(0,0,…)` or the fb vinfo rather than hard-coding.
-- Rotation: the panel is mounted rotated. Onion's **direct framebuffer** renderers (gameSwitcher, infoPanel, bootScreen) rotate 180° when writing to `/dev/fb0` (`sdl_direct_fb.h:63-70`, `display_writeBuffer(..., rotate=true, ...)`; screenshots likewise `screenshot.h:91-119`). The **classic SDL path** (SDL_SetVideoMode + SDL_Flip on Miyoo's libSDL) does no manual rotation in Onion code (`tweaks`, `packageManager`, `themeSwitcher`), so the Miyoo SDL build handles it. That the handling happens inside Miyoo's libSDL is an inference, not checked in source. → **Use the classic SDL path and never write `/dev/fb0` directly.** See §6 for the open question about the background image.
+- Rotation: the panel is mounted rotated. Onion's **direct framebuffer** renderers (gameSwitcher, infoPanel, bootScreen) rotate 180° when writing to `/dev/fb0` (`sdl_direct_fb.h:63-70`, `display_writeBuffer(..., rotate=true, ...)`; screenshots likewise `screenshot.h:91-119`). The **classic SDL path** (SDL_SetVideoMode + SDL_Flip on Miyoo's libSDL) does no manual rotation in Onion code (`tweaks`, `packageManager`, `themeSwitcher`), so the Miyoo SDL build handles it. That the handling happens inside Miyoo's libSDL is an inference, not checked in source. → **Use the classic SDL path and never write `/dev/fb0` directly.** See §6 for how individual images behave.
 
 ---
 
@@ -341,4 +350,4 @@ surprise: src/*.c vendor/cjson/cJSON.c ; $(CC) $(CFLAGS) $^ -o $@ $(LDFLAGS) && 
 2. **surprise.json** = recents JSONL format, compact, `/../../Roms/` paths, fields < 256 B, no `"` or `:` in values.
 3. **Stack** = SDL 1.2 + SDL_ttf + SDL_image from `/mnt/SDCARD/miyoo/lib`, cJSON compiled in. 640×480 with no `full_resolution` file. Classic SDL_Flip path. Optionally have the sync tool pre-scale box art to ≤250×360 to skip rotozoom.
 4. **Build** = Colima + union-miyoomini-toolchain built natively for arm64.
-5. Open items to check on device: MainUI's exact recents rompath form (duplicate risk in GameSwitcher), background.png orientation, Mini Flip behavior, stock `/customer/lib` contents.
+5. Open items to check on device: Mini Flip behavior, stock `/customer/lib` contents. (The recents rompath form and image orientation were checked on device on 2026-11-19; see §3 and §6.)
