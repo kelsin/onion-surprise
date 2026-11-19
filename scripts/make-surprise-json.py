@@ -34,7 +34,11 @@ def gamelist_names(romdir):
 
 
 def valid(*vals):
-    return all('"' not in v and ":" not in v and len(v.encode()) < 256 for v in vals)
+    """Mirror src/games.c value_ok: < 256 bytes, no '"', ':', '\\' or control chars."""
+    return all(
+        v and len(v.encode()) < 256 and not any(c in '":\\' or ord(c) < 0x20 for c in v)
+        for v in vals
+    )
 
 
 def candidates(root):
@@ -71,7 +75,10 @@ def candidates(root):
             label = clean_label(names.get(fn) or stem) or clean_label(stem)
             if not label or not valid(label, rom, img, lnch):
                 continue
-            out.append((cfg, {"label": label, "rompath": rom, "imgpath": img, "launch": lnch, "type": 5}))
+            entry = {"label": label, "rompath": rom, "imgpath": img, "launch": lnch, "type": 5}
+            if len(json.dumps(entry, separators=(",", ":"), ensure_ascii=False).encode()) + 1 >= 1024:
+                continue
+            out.append((cfg, entry))
     return out
 
 
