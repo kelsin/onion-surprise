@@ -27,6 +27,7 @@ scripts/preview.sh        # headless screenshots -> build/preview/*.png
 scripts/package.sh        # build + dist/Surprise-<version>.zip (--no-build to skip the build)
 scripts/deploy.sh <host> [--run]   # copy to a device over SSH (tar over one connection); --run launches it and prints log.txt (press B only, MainUI is still running)
 scripts/make-icon.py      # regenerate surprise.png (uv run --with pillow)
+scripts/make-theme-icons.py <themes-dir> [--dry-run]   # one-colour Surprise icon per TechDweeb theme (uv run --with pillow)
 ```
 
 On-device checklist: [docs/device-testing.md](docs/device-testing.md).

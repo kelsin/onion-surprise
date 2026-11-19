@@ -23,7 +23,8 @@ Tick each; note failures with `log.txt` attached.
 19. Scrolling lag with large (e.g. 500x700) box art.
 20. `scripts/deploy.sh <host>` works against dropbear (single ssh connection, tar over stdin).
 21. `log.txt` is empty after a normal run; any `SDL_Init`, `video:` or `launch failed:` line points at the failure.
-22. Logs: `App/Surprise/log.txt` (stdout+stderr of the last run, truncated each run). Over SSH (Tweaks → Network; root, blank password):
+22. After applying a TechDweeb theme with icons, the Surprise icon matches the theme colour; after applying a non-TechDweeb theme, it shows the colourful gift.
+23. Logs: `App/Surprise/log.txt` (stdout+stderr of the last run, truncated each run). Over SSH (Tweaks → Network; root, blank password):
 
 ```sh
 ssh root@<host> 'cat /mnt/SDCARD/App/Surprise/log.txt'
