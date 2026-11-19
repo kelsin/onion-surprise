@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate App/Surprise/surprise.png (74x74 RGBA gift box). Run: uv run --with pillow scripts/make-icon.py"""
+"""Generate App/Surprise/surprise.png and Icons/Default/app/surprise.png (74x74 RGBA gift box). Run: uv run --with pillow scripts/make-icon.py"""
 import os
 from PIL import Image, ImageDraw
 
@@ -17,4 +17,8 @@ d.ellipse([20 * S, 8 * S, 38 * S, 26 * S], outline=rib, width=4 * S)   # bow loo
 d.ellipse([36 * S, 8 * S, 54 * S, 26 * S], outline=rib, width=4 * S)
 d.ellipse([32 * S, 18 * S, 42 * S, 28 * S], fill=rib2)
 img = img.resize((74, 74), Image.LANCZOS)
-img.save(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "App", "Surprise", "surprise.png"))
+root = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
+for rel in (("App", "Surprise"), ("Icons", "Default", "app")):
+    out = os.path.join(root, *rel)
+    os.makedirs(out, exist_ok=True)
+    img.save(os.path.join(out, "surprise.png"))

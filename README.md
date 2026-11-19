@@ -8,7 +8,7 @@ The list comes from `/mnt/SDCARD/Roms/surprise.json`, written by the separate `s
 
 ## Install
 
-Extract `Surprise-<version>.zip` at the SD card root so `App/Surprise/` appears, then open Apps → Surprise.
+Extract `Surprise-<version>.zip` at the SD card root so `App/Surprise/` appears (it also installs `Icons/Default/app/surprise.png`), then open Apps → Surprise.
 
 ## Quick start (no sync-roms)
 
