@@ -1,4 +1,28 @@
+# Build outputs
 App/Surprise/surprise
-dist/
+App/Surprise/log.txt
 build/
+dist/
+
+# Tooling scratch
 .superpowers/
+
+# macOS
+.DS_Store
+._*
+.AppleDouble
+.LSOverride
+.Spotlight-V100
+.Trashes
+.fseventsd
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+
+# Editors
+.vscode/
+.idea/
+*.swp
+*~
