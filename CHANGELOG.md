@@ -49,5 +49,3 @@
 ### :gear: Continuous Integration
 
 * release with release-please and publish zips to storage ([b846894](https://github.com/kelsin/onion-surprise/commit/b846894277bcaa1a1295f69e32d1893e5c52617e))
-
-## Changelog
