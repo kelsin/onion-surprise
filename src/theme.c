@@ -89,6 +89,8 @@ static TTF_Font *open_font(const char *dir, const char *name, int size, const ch
 static void load_font(ThemeFont *tf, const cJSON *over, const cJSON *base, const char *dir,
                       const char *sec, const char *fallback_sec, int def_size, const char *bundled) {
     const cJSON *sz = cfg_get(over, base, sec, "size");
+    if (!(cJSON_IsNumber(sz) && sz->valueint > 0) && fallback_sec)
+        sz = cfg_get(over, base, fallback_sec, "size");
     int size = cJSON_IsNumber(sz) && sz->valueint > 0 ? sz->valueint : def_size;
     tf->font = open_font(dir, cfg_str(over, base, sec, fallback_sec, "font"), size, bundled);
     tf->color = parse_color(cfg_str(over, base, sec, fallback_sec, "color"));
