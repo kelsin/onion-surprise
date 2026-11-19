@@ -26,6 +26,7 @@ else
 	$(HOST_CC) -O0 -g -Wall -std=gnu11 -Ivendor/cjson -Isrc $(wildcard tests/*.c) $(TEST_SRCS) vendor/cjson/cJSON.c -o $(TEST_BIN)
 	./$(TEST_BIN)
 endif
+	python3 tests/test_make_surprise_json.py
 
 # Native build for the headless preview (run inside toolchain/preview.Dockerfile).
 PREVIEW_BIN = build/preview/surprise
