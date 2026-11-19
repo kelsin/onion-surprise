@@ -1,0 +1,8 @@
+{
+ "label": "GBA",
+ "icon": "",
+ "launch": "launch.sh",
+ "rompath": "../../Roms/GBA",
+ "imgpath": "../../Roms/GBA/Imgs",
+ "extlist": "gba|zip"
+}

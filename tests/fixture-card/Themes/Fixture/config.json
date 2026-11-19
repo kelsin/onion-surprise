@@ -1,0 +1,15 @@
+{
+ "name": "Fixture",
+ "title": {
+  "size": 30,
+  "color": "#FFFFFF"
+ },
+ "list": {
+  "size": 26,
+  "color": "#E8E8F0"
+ },
+ "hint": {
+  "size": 22,
+  "color": "#C8C8D8"
+ }
+}

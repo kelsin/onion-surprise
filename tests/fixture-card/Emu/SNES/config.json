@@ -1,0 +1,8 @@
+{
+ "label": "SNES",
+ "icon": "",
+ "launch": "launch.sh",
+ "rompath": "../../Roms/SNES",
+ "imgpath": "../../Roms/SNES/Imgs",
+ "extlist": "sfc|smc|zip"
+}
