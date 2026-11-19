@@ -34,13 +34,13 @@ static int parse_line(const char *line, Game *g) {
     const char *label = get_str(o, "label"), *rom = get_str(o, "rompath"),
                *launch = get_str(o, "launch"), *img = get_str(o, "imgpath");
     if (!label || !rom || !launch || !value_ok(label) || !value_ok(rom) || !value_ok(launch)) goto done;
-    if (cJSON_GetObjectItemCaseSensitive(o, "imgpath") && (!img || !value_ok(img))) goto done;
+    if (cJSON_GetObjectItemCaseSensitive(o, "imgpath") && (!img || (img[0] && !value_ok(img)))) goto done;
     if (!exists_mapped(rom) || !exists_mapped(launch)) goto done;
     memset(g, 0, sizeof *g);
     snprintf(g->label, FIELD_MAX, "%s", label);
     snprintf(g->rompath, FIELD_MAX, "%s", rom);
     snprintf(g->launch, FIELD_MAX, "%s", launch);
-    if (img && exists_mapped(img)) snprintf(g->imgpath, FIELD_MAX, "%s", img);
+    if (img && img[0] && exists_mapped(img)) snprintf(g->imgpath, FIELD_MAX, "%s", img);
     ok = 1;
 done:
     cJSON_Delete(o);

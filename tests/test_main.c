@@ -71,13 +71,14 @@ static void test_games(void) {
     strcat(data, LINE("NoRom", ROM("Nope.gba"), "", LAUNCH));                       /* missing rom */
     strcat(data, LINE("NoLaunch", ROM("Metroid.gba"), "", "/mnt/SDCARD/Emu/ZZZ/launch.sh"));
     strcat(data, LINE("MissingImg", ROM("Metroid.gba"), ",\"imgpath\":\"/mnt/SDCARD/Roms/GBA/Imgs/none.png\"", LAUNCH));
+    strcat(data, LINE("EmptyImg", ROM("Metroid.gba"), ",\"imgpath\":\"\"", LAUNCH));   /* empty imgpath = absent */
     strcat(data, "not json at all\n");
     strcat(data, "{\"label\":\"NoLaunchKey\",\"rompath\":\"" ROM("Metroid.gba") "\"}\n");
     wr("/Roms/surprise.json", data);
 
     int n = games_load(g, MAX_GAMES);
-    CHECK(n == 4);
-    if (n == 4) {
+    CHECK(n == 5);
+    if (n == 5) {
         CHECK(strcmp(g[0].label, "Metroid") == 0);
         CHECK(strcmp(g[0].rompath, ROM("Metroid.gba")) == 0);
         CHECK(strcmp(g[0].imgpath, "/mnt/SDCARD/Emu/GBA/../../Roms/GBA/Imgs/Metroid.png") == 0);
@@ -86,6 +87,7 @@ static void test_games(void) {
         CHECK(g[1].imgpath[0] == 0);
         CHECK(strlen(g[2].label) == 255);
         CHECK(strcmp(g[3].label, "MissingImg") == 0 && g[3].imgpath[0] == 0);
+        CHECK(strcmp(g[4].label, "EmptyImg") == 0 && g[4].imgpath[0] == 0);
     }
     CHECK(games_load(g, 2) == 2);
 
