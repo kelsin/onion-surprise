@@ -1,6 +1,6 @@
 {
-"label": "Surprise",
-"icon": "surprise.png",
-"launch": "launch.sh",
-"description": "Games picked for you by sync-roms"
+"label":"Surprise",
+"icon":"surprise.png",
+"launch":"launch.sh",
+"description":"Games picked for you by sync-roms"
 }

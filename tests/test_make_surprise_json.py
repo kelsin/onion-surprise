@@ -25,7 +25,11 @@ with tempfile.TemporaryDirectory() as d:
         assert o["type"] == 5
         for k in KEYS[:4]:
             v = o[k]
-            assert '"' not in v and ":" not in v.replace("/mnt/SDCARD", "", 1) if k != "label" else ('"' not in v and ":" not in v), v
+            assert '"' not in v, v
+            if k == "label":
+                assert ":" not in v, v
+            else:
+                assert ":" not in v.replace("/mnt/SDCARD", "", 1), v
             assert len(v.encode()) < 256
         assert o["rompath"].startswith("/mnt/SDCARD/Emu/") and "/../../Roms/" in o["rompath"]
         real = lambda p: os.path.join(card, p[len("/mnt/SDCARD/"):])

@@ -10,6 +10,6 @@ VERSION=$(git describe --tags --always --dirty)
 mkdir -p dist
 OUT="$PWD/dist/Surprise-$VERSION.zip"
 rm -f "$OUT"
-zip -X -r "$OUT" App/Surprise -x 'App/Surprise/log.txt' -x '*.DS_Store'
+zip -q -X -r "$OUT" App/Surprise -x 'App/Surprise/log.txt' -x '*.DS_Store'
+unzip -l "$OUT" >&2
 echo "$OUT"
-unzip -l "$OUT"

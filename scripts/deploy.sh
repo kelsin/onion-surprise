@@ -5,7 +5,9 @@ set -e
 cd "$(dirname "$0")/.."
 HOST=${1:?usage: deploy.sh <host> [--run]}
 ssh root@"$HOST" 'mkdir -p /mnt/SDCARD/App'
-scp -r App/Surprise root@"$HOST":/mnt/SDCARD/App/
+ssh root@"$HOST" 'mkdir -p /mnt/SDCARD/App/Surprise/res'
+scp App/Surprise/surprise App/Surprise/launch.sh App/Surprise/config.json App/Surprise/surprise.png root@"$HOST":/mnt/SDCARD/App/Surprise/
+scp App/Surprise/res/* root@"$HOST":/mnt/SDCARD/App/Surprise/res/
 if [ "$2" = "--run" ]; then
 	ssh root@"$HOST" 'cd /mnt/SDCARD/App/Surprise && chmod +x launch.sh surprise && ./launch.sh; cat log.txt'
 fi
