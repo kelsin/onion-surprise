@@ -118,11 +118,7 @@ SDL_Surface *ui_load_art(const Theme *t, const char *path) {
     int mh = panel_h(t) < PANEL_H ? panel_h(t) : PANEL_H;
     SDL_Surface *s = ui_scale_fit(img, mw, mh);
     SDL_FreeSurface(img);
-    if (!s) return NULL;
-    SDL_Surface *disp = SDL_DisplayFormatAlpha(s);
-    if (!disp) return s;
-    SDL_FreeSurface(s);
-    return disp;
+    return s; /* software ARGB on purpose: see load_skin in theme.c */
 }
 
 static void hint(SDL_Surface *d, const Theme *t, SDL_Surface *icon, const char *letter, const char *label, int *x) {

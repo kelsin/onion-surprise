@@ -111,13 +111,26 @@ static SDL_Surface *load_skin(const char *dir, const char *name) {
         paths_card(p, sizeof p, rel);
         if (access(p, R_OK) == 0) s = IMG_Load(p);
     }
-    if (!s) return NULL;
-    SDL_Surface *d = SDL_DisplayFormatAlpha(s);
-    if (d) {
-        SDL_FreeSurface(s);
-        return d;
+    return s; /* blit as loaded, as Onion's own renderers do; converting them hid the A/B icons on device */
+}
+
+/* Onion rotates background.png 180 degrees before drawing it; on the device it is upside down otherwise. */
+static void rotate180(SDL_Surface *s) {
+    if (!s || SDL_LockSurface(s) != 0) return;
+    int bpp = s->format->BytesPerPixel;
+    Uint8 tmp[4];
+    for (int y = 0; y < (s->h + 1) / 2; y++) {
+        Uint8 *a = (Uint8 *)s->pixels + y * s->pitch;
+        Uint8 *b = (Uint8 *)s->pixels + (s->h - 1 - y) * s->pitch;
+        int n = (a == b) ? s->w / 2 : s->w;
+        for (int x = 0; x < n; x++) {
+            Uint8 *pa = a + x * bpp, *pb = b + (s->w - 1 - x) * bpp;
+            memcpy(tmp, pa, bpp);
+            memcpy(pa, pb, bpp);
+            memcpy(pb, tmp, bpp);
+        }
     }
-    return s;
+    SDL_UnlockSurface(s);
 }
 
 void theme_load(Theme *t, const char *bundled_font) {
@@ -142,6 +155,7 @@ void theme_load(Theme *t, const char *bundled_font) {
     cJSON_Delete(over);
 
     t->background = load_skin(dir, "background");
+    rotate180(t->background);
     t->bg_title = load_skin(dir, "bg-title");
     t->bg_list_s = load_skin(dir, "bg-list-s");
     t->div_line_h = load_skin(dir, "div-line-h");
